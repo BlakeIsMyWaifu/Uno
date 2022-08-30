@@ -1,5 +1,6 @@
-import { t } from '../trpc'
 import { z } from 'zod'
+
+import { t } from '../utils/trpc'
 
 export const exampleRouter = t.router({
 	hello: t.procedure
@@ -8,8 +9,5 @@ export const exampleRouter = t.router({
 			return {
 				greeting: `Hello ${input?.text ?? 'world'}`
 			}
-		}),
-	getAll: t.procedure.query(({ ctx }) => {
-		return ctx.prisma.example.findMany()
-	})
+		})
 })
