@@ -4,7 +4,15 @@ export const authRouter = t.router({
 	getSession: t.procedure.query(({ ctx }) => {
 		return ctx.session
 	}),
-	getSecretMessage: authedProcedure.query(() => {
-		return 'You are logged in and can see this secret message!'
+	getUserInfo: authedProcedure.query(async ({ ctx }) => {
+		return await prisma?.user.findUnique({
+			where: {
+				id: ctx.session.user.id
+			},
+			select: {
+				name: true,
+				image: true
+			}
+		})
 	})
 })

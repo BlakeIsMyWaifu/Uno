@@ -74,6 +74,8 @@ const Account: FC = () => {
 	const [userMenuOpened, setUserMenuOpened] = useState(false)
 	const { classes, theme, cx } = useStyles({ opened: userMenuOpened })
 
+	const { data } = trpc.proxy.auth.getUserInfo.useQuery()
+
 	return (
 		<Menu
 			width={260}
@@ -86,8 +88,8 @@ const Account: FC = () => {
 				<UnstyledButton className={cx(classes.user, { [classes.userActive]: userMenuOpened })} >
 					<Group spacing={7}>
 						<Avatar
-							src='/images/TEMP_AVATAR.jpg'
-							alt='TEMP_NAME'
+							src={data?.image}
+							alt={data?.name ?? ''}
 							radius='xl'
 							size={20}
 						/>
@@ -96,7 +98,7 @@ const Account: FC = () => {
 							size='sm'
 							sx={{ lineHeight: 1, color: theme.white }}
 							mr={3}
-						>TEMP_NAME</Text>
+						>{data?.name ?? ''}</Text>
 						<IconChevronDown
 							size={12}
 							stroke={1.5}
