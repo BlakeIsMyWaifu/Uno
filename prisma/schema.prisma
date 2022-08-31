@@ -1,10 +1,13 @@
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+    provider             = "mysql"
+    url                  = env("DATABASE_URL")
+    shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
+    referentialIntegrity = "prisma"
 }
 
 // Necessary for Next auth
@@ -14,12 +17,12 @@ model Account {
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? // @db.Text
+    id_token          String? @db.Text
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -42,6 +45,8 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+
+    Player Player[]
 }
 
 model VerificationToken {
@@ -50,4 +55,19 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Lobby {
+    id      String   @id @default(cuid())
+    players Player[]
+}
+
+model Player {
+    user   User   @relation(fields: [userId], references: [id])
+    userId String @id
+
+    lobby   Lobby?  @relation(fields: [lobbyId], references: [id])
+    lobbyId String?
+
+    isHost Boolean
 }
